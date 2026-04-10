@@ -77,7 +77,6 @@ npx wrangler secret put PROXYIP
 `Settings → Secrets and variables → Actions` и добавь:
 
 - `CLOUDFLARE_API_TOKEN`
-- `CLOUDFLARE_ACCOUNT_ID`
 - `UUID` (если хочешь прокидывать как секрет на этапе deploy)
 - `PROXYIP` (опционально)
 
@@ -88,7 +87,7 @@ npx wrangler secret put PROXYIP
 Workflow уже добавлен в репо и делает следующее:
 
 - на `push` в `main` и в `pull_request` запускает валидацию (install + syntax check);
-- деплой запускается только вне PR и только если заданы secrets `CLOUDFLARE_API_TOKEN` и `CLOUDFLARE_ACCOUNT_ID`;
+- деплой запускается только вне PR и только если задан secret `CLOUDFLARE_API_TOKEN`;
 - если секретов нет, workflow явно пишет, что деплой пропущен.
 
 Также есть ручной запуск (`workflow_dispatch`) из вкладки **Actions**.
@@ -107,10 +106,9 @@ Workflow уже добавлен в репо и делает следующее:
 ## 8) Быстрый чеклист, если деплой не проходит
 
 1. Неверный `CLOUDFLARE_API_TOKEN` или недостаточные права.
-2. Не тот `CLOUDFLARE_ACCOUNT_ID`.
-3. Не заполнены обязательные переменные (`UUID`).
-4. В `wrangler.toml` указан не тот `name`.
-5. Ограничения по политике аккаунта/зоны в Cloudflare.
+2. Не заполнены обязательные переменные (`UUID`).
+3. В `wrangler.toml` указан не тот `name`.
+4. Ограничения по политике аккаунта/зоны в Cloudflare.
 
 ---
 

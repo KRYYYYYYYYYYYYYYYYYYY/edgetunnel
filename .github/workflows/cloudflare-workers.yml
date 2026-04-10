@@ -28,7 +28,7 @@ jobs:
   deploy:
     needs: validate
     runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request' && secrets.CLOUDFLARE_API_TOKEN != '' && secrets.CLOUDFLARE_ACCOUNT_ID != ''
+    if: github.event_name != 'pull_request' && secrets.CLOUDFLARE_API_TOKEN != ''
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -45,14 +45,13 @@ jobs:
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
 
   deploy-skip-notice:
     needs: validate
     runs-on: ubuntu-latest
-    if: github.event_name != 'pull_request' && (secrets.CLOUDFLARE_API_TOKEN == '' || secrets.CLOUDFLARE_ACCOUNT_ID == '')
+    if: github.event_name != 'pull_request' && secrets.CLOUDFLARE_API_TOKEN == ''
     steps:
       - name: Missing deploy secrets
         run: |
-          echo "Cloudflare deploy skipped: set CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID in GitHub Secrets."
+          echo "Cloudflare deploy skipped: set CLOUDFLARE_API_TOKEN in GitHub Secrets."
