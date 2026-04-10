@@ -4,10 +4,11 @@ on:
   push:
     branches:
       - main
+  pull_request:
   workflow_dispatch:
 
 jobs:
-  deploy:
+  validate:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -24,12 +25,34 @@ jobs:
       - name: Validate worker syntax
         run: node --check src/worker-vless.js
 
+  deploy:
+    needs: validate
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' && secrets.CLOUDFLARE_API_TOKEN != '' && secrets.CLOUDFLARE_ACCOUNT_ID != ''
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           command: deploy
-        env:
-          UUID: ${{ secrets.UUID }}
-          PROXYIP: ${{ secrets.PROXYIP }}
+
+  deploy-skip-notice:
+    needs: validate
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request' && (secrets.CLOUDFLARE_API_TOKEN == '' || secrets.CLOUDFLARE_ACCOUNT_ID == '')
+    steps:
+      - name: Missing deploy secrets
+        run: |
+          echo "Cloudflare deploy skipped: set CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID in GitHub Secrets."

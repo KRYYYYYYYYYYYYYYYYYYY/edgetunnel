@@ -87,10 +87,9 @@ npx wrangler secret put PROXYIP
 
 Workflow уже добавлен в репо и делает следующее:
 
-- на `push` в `main`:
-  1. ставит зависимости;
-  2. проверяет синтаксис worker-файла;
-  3. деплоит Worker через `cloudflare/wrangler-action@v3`.
+- на `push` в `main` и в `pull_request` запускает валидацию (install + syntax check);
+- деплой запускается только вне PR и только если заданы secrets `CLOUDFLARE_API_TOKEN` и `CLOUDFLARE_ACCOUNT_ID`;
+- если секретов нет, workflow явно пишет, что деплой пропущен.
 
 Также есть ручной запуск (`workflow_dispatch`) из вкладки **Actions**.
 
